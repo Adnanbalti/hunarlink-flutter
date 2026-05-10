@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../auth/auth_service.dart';
 import '../auth/phone_input_screen.dart';
 import '../provider/provider_list_screen.dart';
+import '../booking/my_bookings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -24,6 +25,11 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const MyBookingsScreen())),
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await AuthService.logout();
@@ -43,7 +49,6 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome banner
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
