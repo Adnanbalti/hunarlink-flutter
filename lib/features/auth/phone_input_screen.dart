@@ -16,7 +16,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
 
   Future<void> _sendOtp() async {
     final phone = _phoneController.text.trim();
-    if (phone.isEmpty || phone.length < 10) {
+    if (phone.isEmpty || phone.length < 11) {
       setState(() => _error = 'Valid phone number enter karo');
       return;
     }

@@ -1,3 +1,5 @@
+import 'user_model.dart';
+
 class ProviderModel {
   final String id;
   final UserModel user;

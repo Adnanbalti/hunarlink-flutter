@@ -1,3 +1,6 @@
+import 'user_model.dart';
+import 'provider_model.dart';
+
 class BookingModel {
   final String id;
   final UserModel consumer;
