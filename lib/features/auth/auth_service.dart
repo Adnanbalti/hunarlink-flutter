@@ -9,13 +9,17 @@ class AuthService {
   }
 
   static Future<String> verifyOtp(String phone, String otp) async {
-    final response = await ApiClient.dio.post('/auth/verify-otp', data: {
-      'phone': phone,
-      'otp': otp,
-    });
-    final token = response.data['data']['token'];
-    await _storage.write(key: 'jwt_token', value: token);
-    return token;
+  final response = await ApiClient.dio.post('/auth/verify-otp', data: {
+    'phone': phone,
+    'otp': otp,
+  });
+  final token = response.data['data']['token'];
+  final userId = response.data['data']['userId']; // add karo
+  await _storage.write(key: 'jwt_token', value: token);
+  if (userId != null) {
+    await _storage.write(key: 'user_id', value: userId);
+  }
+  return token;
   }
 
   static Future<void> logout() async {
