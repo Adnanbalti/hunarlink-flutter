@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/auth_service.dart';
-import 'features/auth/phone_input_screen.dart';
+import 'features/auth/welcome_screen.dart';
 import 'features/home/home_screen.dart';
 
 void main() async {
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'HunarLink',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
-      home: isLoggedIn ? const HomeScreen() : const PhoneInputScreen(),
+      home: isLoggedIn ? const HomeScreen() : const WelcomeScreen(),
     );
   }
 }

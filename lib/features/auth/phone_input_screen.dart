@@ -3,7 +3,8 @@ import 'auth_service.dart';
 import 'otp_verify_screen.dart';
 
 class PhoneInputScreen extends StatefulWidget {
-  const PhoneInputScreen({super.key});
+  final bool isLogin;
+  const PhoneInputScreen({super.key, this.isLogin = false});
 
   @override
   State<PhoneInputScreen> createState() => _PhoneInputScreenState();
@@ -27,8 +28,10 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       await AuthService.sendOtp(phone);
       if (mounted) {
         Navigator.push(context, MaterialPageRoute(
-          builder: (_) => OtpVerifyScreen(phone: phone),
-        ));
+          builder: (_) => OtpVerifyScreen(
+            phone: phone,
+            isRegistration: false,
+          )));
       }
     } catch (e) {
       setState(() => _error = 'OTP send karne mein error. Backend check karo.');
@@ -41,6 +44,8 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(widget.isLogin ? 'Login' : 'Phone Verify')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -48,25 +53,28 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
-              const Text('HunarLink',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              Text(widget.isLogin ? 'Wapas Aaiye!' : 'Phone Verify Karo',
+                style: const TextStyle(
+                  fontSize: 26, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Text('Apna phone number enter karo',
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
+                style: TextStyle(
+                  fontSize: 16, color: Colors.grey.shade600)),
               const SizedBox(height: 40),
 
               TextField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
+                maxLength: 11,
+                decoration: const InputDecoration(
                   labelText: 'Phone Number',
                   hintText: '03001234567',
-                  prefixIcon: const Icon(Icons.phone),
+                  prefixIcon: Icon(Icons.phone),
                 ),
               ),
-              const SizedBox(height: 12),
 
-              if (_error != null)
+              if (_error != null) ...[
+                const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -74,15 +82,18 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(_error!,
-                    style: TextStyle(color: Colors.red.shade700, fontSize: 13)),
+                    style: TextStyle(
+                      color: Colors.red.shade700, fontSize: 13)),
                 ),
+              ],
 
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _loading ? null : _sendOtp,
                 child: _loading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('OTP Bhejo', style: TextStyle(fontSize: 16)),
+                  : const Text('OTP Bhejo',
+                      style: TextStyle(fontSize: 16)),
               ),
             ],
           ),

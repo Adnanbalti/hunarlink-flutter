@@ -4,7 +4,12 @@ import '../home/home_screen.dart';
 
 class OtpVerifyScreen extends StatefulWidget {
   final String phone;
-  const OtpVerifyScreen({super.key, required this.phone});
+  final bool isRegistration;
+  const OtpVerifyScreen({
+    super.key,
+    required this.phone,
+    this.isRegistration = false,
+  });
 
   @override
   State<OtpVerifyScreen> createState() => _OtpVerifyScreenState();
@@ -25,7 +30,19 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
     setState(() { _loading = true; _error = null; });
 
     try {
-      await AuthService.verifyOtp(widget.phone, otp);
+      if (!widget.isRegistration) {
+        // Login flow — token save karo
+        final result = await AuthService.verifyOtp(widget.phone, otp);
+        if (!mounted) return;
+        if (result['isNewUser'] == true) {
+          setState(() => _error = 'Account nahi mila. Pehle register karo.');
+          return;
+        }
+      } else {
+        // Registration flow — sirf OTP verify karo
+        await AuthService.verifyOtpOnly(widget.phone, otp);
+      }
+
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -53,7 +70,8 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
             children: [
               const SizedBox(height: 20),
               const Text('OTP Enter Karo',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Text('${widget.phone} pe OTP bheja gaya',
                 style: TextStyle(color: Colors.grey.shade600)),
@@ -63,14 +81,15 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                 controller: _otpController,
                 keyboardType: TextInputType.number,
                 maxLength: 6,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'OTP Code',
                   hintText: '1234',
-                  prefixIcon: const Icon(Icons.lock_outline),
+                  prefixIcon: Icon(Icons.lock_outline),
                 ),
               ),
 
-              if (_error != null)
+              if (_error != null) ...[
+                const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -78,15 +97,18 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(_error!,
-                    style: TextStyle(color: Colors.red.shade700, fontSize: 13)),
+                    style: TextStyle(
+                      color: Colors.red.shade700, fontSize: 13)),
                 ),
+              ],
 
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _loading ? null : _verifyOtp,
                 child: _loading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('Verify Karo', style: TextStyle(fontSize: 16)),
+                  : const Text('Verify Karo',
+                      style: TextStyle(fontSize: 16)),
               ),
             ],
           ),
